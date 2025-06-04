@@ -8,8 +8,17 @@ import type {
 import { API_ENDPOINTS } from "../constants/api";
 import { STORAGE_KEYS } from "../constants/storage";
 
+interface OnboardingData {
+  goal: string;
+  activityLevel: string;
+  currentWeight: number;
+  targetWeight?: number;
+  height: number;
+  age: number;
+  gender: string;
+}
+
 class AuthService {
-  // Register a new user
   async register(
     userData: RegisterData
   ): Promise<{ message: string; email: string }> {
@@ -20,7 +29,6 @@ class AuthService {
     return response.data;
   }
 
-  // Verify email with code
   async verifyEmail(verificationData: {
     email: string;
     code: string;
@@ -30,7 +38,6 @@ class AuthService {
       verificationData
     );
 
-    // Store auth data after successful verification
     if (response.data.token) {
       this.setAuthData(response.data);
     }
@@ -38,7 +45,19 @@ class AuthService {
     return response.data;
   }
 
-  // Resend verification code
+  async completeOnboarding(data: OnboardingData): Promise<AuthResponse> {
+    const response = await apiClient.post<AuthResponse>(
+      API_ENDPOINTS.AUTH.ONBOARDING,
+      data
+    );
+
+    if (response.data.token) {
+      this.setAuthData(response.data);
+    }
+
+    return response.data;
+  }
+
   async resendVerificationCode(email: string): Promise<{ message: string }> {
     const response = await apiClient.post<{ message: string }>(
       API_ENDPOINTS.AUTH.RESEND_CODE,
@@ -47,14 +66,12 @@ class AuthService {
     return response.data;
   }
 
-  // Login user
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const response = await apiClient.post<AuthResponse>(
       API_ENDPOINTS.AUTH.LOGIN,
       credentials
     );
 
-    // Store auth data after successful login
     if (response.data.token) {
       this.setAuthData(response.data);
     }
@@ -62,30 +79,25 @@ class AuthService {
     return response.data;
   }
 
-  // Logout user
   logout(): void {
     this.clearAuthData();
     window.location.href = "/login";
   }
 
-  // Check if user is authenticated
   isAuthenticated(): boolean {
     const token = this.getToken();
     return !!token && !this.isTokenExpired(token);
   }
 
-  // Get stored token
   getToken(): string | null {
     return localStorage.getItem(STORAGE_KEYS.TOKEN);
   }
 
-  // Get stored user data
   getUser(): User | null {
     const userData = localStorage.getItem(STORAGE_KEYS.USER);
     return userData ? JSON.parse(userData) : null;
   }
 
-  // Private helper methods
   private setAuthData(authResponse: AuthResponse): void {
     localStorage.setItem(STORAGE_KEYS.TOKEN, authResponse.token);
 
@@ -117,6 +129,5 @@ class AuthService {
   }
 }
 
-// Export singleton instance
 export const authService = new AuthService();
 export default authService;

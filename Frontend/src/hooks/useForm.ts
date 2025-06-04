@@ -33,7 +33,6 @@ export function useForm<T extends Record<string, any>>({
         [name]: value,
       }));
 
-      // Clear error when user starts typing
       if (errors[name as string]) {
         setErrors((prev) => ({
           ...prev,
@@ -50,7 +49,6 @@ export function useForm<T extends Record<string, any>>({
       setIsSubmitting(true);
 
       try {
-        // Run validation if provided
         if (validate) {
           const validationErrors = validate(values);
           if (Object.keys(validationErrors).length > 0) {
@@ -59,13 +57,10 @@ export function useForm<T extends Record<string, any>>({
           }
         }
 
-        // Clear any existing errors
         setErrors({});
 
-        // Call onSubmit
         await onSubmit(values);
       } catch (error) {
-        // Handle submission errors
         console.error("Form submission error:", error);
       } finally {
         setIsSubmitting(false);

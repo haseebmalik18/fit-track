@@ -13,7 +13,6 @@ const LoginPage: React.FC = () => {
   const [displayText, setDisplayText] = useState("");
   const fullText = "Welcome back to your fitness journey";
 
-  // Smooth typing animation effect
   useEffect(() => {
     let index = 0;
     const timer = setInterval(() => {
@@ -57,7 +56,6 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-[420px]">
-          {/* Header with refined typography */}
           <div className="text-center mb-10">
             <div className="group cursor-pointer inline-block mb-6">
               <h1 className="text-4xl font-light text-slate-800 tracking-wide transform transition-all duration-500 group-hover:scale-105">
@@ -80,10 +78,8 @@ const LoginPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Login Card with smooth hover effects */}
           <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform transition-all duration-500 ease-out hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-2">
             <form onSubmit={handleSubmit} className="space-y-7">
-              {/* API Error with refined styling */}
               {apiError && (
                 <div className="bg-red-50/80 backdrop-blur-sm text-red-700 p-4 rounded-2xl text-sm border border-red-100/50 animate-fadeIn">
                   <div className="flex items-center space-x-2">
@@ -93,7 +89,6 @@ const LoginPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Email Field */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700 tracking-wide">
                   Email Address
@@ -109,7 +104,6 @@ const LoginPage: React.FC = () => {
                 />
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <label className="block text-sm font-medium text-slate-700 tracking-wide">
@@ -134,7 +128,6 @@ const LoginPage: React.FC = () => {
                 />
               </div>
 
-              {/* Submit Button with modern styling */}
               <Button
                 type="submit"
                 loading={isSubmitting}
@@ -167,7 +160,6 @@ const LoginPage: React.FC = () => {
               </Button>
             </form>
 
-            {/* Register Link with elegant design */}
             <div className="mt-8 pt-6 border-t border-slate-200/60 text-center">
               <p className="text-slate-600 text-sm font-light">
                 New to FitTrack?{" "}
@@ -182,7 +174,6 @@ const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Subtle footer text */}
           <div className="text-center mt-8">
             <p className="text-slate-400 text-xs font-light tracking-wide">
               Secure login • Privacy protected

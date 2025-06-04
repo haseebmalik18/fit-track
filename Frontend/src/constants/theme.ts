@@ -1,4 +1,3 @@
-// Minimalistic deep blue theme for FitTrack
 export const COLORS = {
   // Primary - Deep Blue palette
   primary: {

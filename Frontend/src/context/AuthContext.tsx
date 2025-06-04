@@ -13,42 +13,54 @@ import type {
 } from "../types/auth";
 import authService from "../services/authService";
 
-// Auth state interface
+interface OnboardingData {
+  goal: string;
+  activityLevel: string;
+  currentWeight: number;
+  targetWeight?: number;
+  height: number;
+  age: number;
+  gender: string;
+}
+
 interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   loading: boolean;
+  isTransitioning: boolean;
 }
 
-// Auth context interface
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<AuthResponse>;
   register: (
     userData: RegisterData
   ) => Promise<{ message: string; email: string }>;
   verifyEmail: (email: string, code: string) => Promise<AuthResponse>;
+  completeOnboarding: (data: OnboardingData) => Promise<AuthResponse>;
   resendVerificationCode: (email: string) => Promise<void>;
   logout: () => void;
 }
 
-// Action types for reducer
 type AuthAction =
   | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_TRANSITIONING"; payload: boolean }
   | { type: "SET_AUTHENTICATED"; payload: User }
   | { type: "SET_UNAUTHENTICATED" };
 
-// Initial state
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
   loading: true,
+  isTransitioning: false,
 };
 
-// Auth reducer
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "SET_LOADING":
       return { ...state, loading: action.payload };
+
+    case "SET_TRANSITIONING":
+      return { ...state, isTransitioning: action.payload };
 
     case "SET_AUTHENTICATED":
       return {
@@ -56,6 +68,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isAuthenticated: true,
         user: action.payload,
         loading: false,
+        isTransitioning: false,
       };
 
     case "SET_UNAUTHENTICATED":
@@ -64,6 +77,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isAuthenticated: false,
         user: null,
         loading: false,
+        isTransitioning: false,
       };
 
     default:
@@ -71,10 +85,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
-// Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Provider component
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -82,7 +94,6 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Initialize auth state on mount
   useEffect(() => {
     const initializeAuth = () => {
       try {
@@ -102,11 +113,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     initializeAuth();
   }, []);
 
-  // Auth methods
   const login = async (
     credentials: LoginCredentials
   ): Promise<AuthResponse> => {
-    dispatch({ type: "SET_LOADING", payload: true });
+    dispatch({ type: "SET_TRANSITIONING", payload: true });
 
     try {
       const response = await authService.login(credentials);
@@ -140,10 +150,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     email: string,
     code: string
   ): Promise<AuthResponse> => {
-    dispatch({ type: "SET_LOADING", payload: true });
+    dispatch({ type: "SET_TRANSITIONING", payload: true });
 
     try {
       const response = await authService.verifyEmail({ email, code });
+      const user = authService.getUser();
+
+      if (user) {
+        setTimeout(() => {
+          dispatch({ type: "SET_AUTHENTICATED", payload: user });
+        }, 100);
+      }
+
+      return response;
+    } catch (error) {
+      dispatch({ type: "SET_TRANSITIONING", payload: false });
+      throw error;
+    }
+  };
+
+  const completeOnboarding = async (
+    data: OnboardingData
+  ): Promise<AuthResponse> => {
+    dispatch({ type: "SET_TRANSITIONING", payload: true });
+
+    try {
+      const response = await authService.completeOnboarding(data);
       const user = authService.getUser();
 
       if (user) {
@@ -152,7 +184,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       return response;
     } catch (error) {
-      dispatch({ type: "SET_LOADING", payload: false });
+      dispatch({ type: "SET_TRANSITIONING", payload: false });
       throw error;
     }
   };
@@ -171,6 +203,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     verifyEmail,
+    completeOnboarding,
     resendVerificationCode,
     logout,
   };
@@ -178,7 +211,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook to use auth context
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

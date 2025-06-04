@@ -1,8 +1,6 @@
-// API configuration constants
 export const API_BASE_URL = "http://localhost:8080/api";
 export const API_TIMEOUT = 10000;
 
-// API endpoints
 export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: "/auth/login",

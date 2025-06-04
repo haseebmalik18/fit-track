@@ -92,7 +92,6 @@ const RegisterPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-[420px]">
-          {/* Header with refined typography */}
           <div className="text-center mb-10">
             <div className="group cursor-pointer inline-block mb-6">
               <h1 className="text-4xl font-light text-slate-800 tracking-wide transform transition-all duration-500 group-hover:scale-105">
@@ -115,10 +114,8 @@ const RegisterPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Register Card with smooth hover effects */}
           <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform transition-all duration-500 ease-out hover:shadow-2xl hover:scale-[1.02] hover:-translate-y-2">
             <form onSubmit={handleSubmit} className="space-y-7">
-              {/* API Error with refined styling */}
               {apiError && (
                 <div className="bg-red-50/80 backdrop-blur-sm text-red-700 p-4 rounded-2xl text-sm border border-red-100/50 animate-fadeIn">
                   <div className="flex items-center space-x-2">
@@ -128,7 +125,6 @@ const RegisterPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Success Message */}
               {successMessage && (
                 <div className="bg-green-50/80 backdrop-blur-sm text-green-700 p-4 rounded-2xl text-sm border border-green-100/50 animate-fadeIn">
                   <div className="flex items-center space-x-2">
@@ -138,7 +134,6 @@ const RegisterPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-slate-700 tracking-wide">
@@ -171,7 +166,6 @@ const RegisterPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Email Field */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700 tracking-wide">
                   Email Address
@@ -187,7 +181,6 @@ const RegisterPage: React.FC = () => {
                 />
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-slate-700 tracking-wide">
                   Password
@@ -206,7 +199,6 @@ const RegisterPage: React.FC = () => {
                 </p>
               </div>
 
-              {/* Submit Button with modern styling */}
               <Button
                 type="submit"
                 loading={isSubmitting}
@@ -239,7 +231,6 @@ const RegisterPage: React.FC = () => {
               </Button>
             </form>
 
-            {/* Login Link with elegant design */}
             <div className="mt-8 pt-6 border-t border-slate-200/60 text-center">
               <p className="text-slate-600 text-sm font-light">
                 Already have an account?{" "}
@@ -254,7 +245,6 @@ const RegisterPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Subtle footer text */}
           <div className="text-center mt-8">
             <p className="text-slate-400 text-xs font-light tracking-wide">
               Secure registration • Privacy protected

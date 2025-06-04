@@ -10,17 +10,14 @@ const VerifyEmailPage: React.FC = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get email from URL params
   const urlParams = new URLSearchParams(window.location.search);
   const email = urlParams.get("email") || "";
 
-  // Code input state - array of 6 digits
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>(
     new Array(6).fill(null)
   );
 
-  // Auto-focus first input on mount
   useEffect(() => {
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
@@ -28,24 +25,20 @@ const VerifyEmailPage: React.FC = () => {
   }, []);
 
   const handleCodeChange = (index: number, value: string) => {
-    // Only allow single digit
     if (value.length > 1) return;
 
-    // Only allow numbers
     if (value && !/^\d$/.test(value)) return;
 
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
 
-    // Auto-focus next input if value entered
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    // Handle backspace
     if (e.key === "Backspace" && !code[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -68,22 +61,28 @@ const VerifyEmailPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const codeString = code.join("");
+    const codeString = code.join("").trim();
     if (codeString.length !== 6) {
       setApiError("Please enter all 6 digits");
       return;
     }
 
+    if (!/^\d{6}$/.test(codeString)) {
+      setApiError("Please enter only numbers");
+      return;
+    }
+
     setIsSubmitting(true);
     setApiError("");
+    setSuccessMessage("");
 
     try {
-      await verifyEmail(email, codeString);
-      // Redirect handled by auth context
+      await verifyEmail(email.toLowerCase().trim(), codeString);
+      setSuccessMessage("Email verified successfully!");
     } catch (error) {
       const apiErr = error as ApiError;
       setApiError(apiErr.error || "Verification failed. Please try again.");
-      // Clear code on error
+
       setCode(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } finally {
@@ -102,9 +101,9 @@ const VerifyEmailPage: React.FC = () => {
     setSuccessMessage("");
 
     try {
-      await resendVerificationCode(email);
+      await resendVerificationCode(email.toLowerCase().trim());
       setSuccessMessage("New verification code sent!");
-      // Clear current code
+
       setCode(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
     } catch (error) {
@@ -115,22 +114,18 @@ const VerifyEmailPage: React.FC = () => {
     }
   };
 
-  // Check if code is complete
   const isCodeComplete = code.every((digit) => digit !== "");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-blue-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        {/* Simple Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">
             Fit<span className="text-blue-600">Track</span>
           </h1>
         </div>
 
-        {/* Verification Card */}
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-white/50">
-          {/* Clean Instructions */}
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold text-slate-900 mb-2">
               Enter verification code
@@ -141,7 +136,6 @@ const VerifyEmailPage: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Messages */}
             {apiError && (
               <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm border border-red-100">
                 {apiError}
@@ -154,7 +148,6 @@ const VerifyEmailPage: React.FC = () => {
               </div>
             )}
 
-            {/* Code Input Boxes */}
             <div className="flex justify-center space-x-3 mb-6">
               {code.map((digit, index) => (
                 <input
@@ -163,6 +156,8 @@ const VerifyEmailPage: React.FC = () => {
                     inputRefs.current[index] = el;
                   }}
                   type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={digit}
                   onChange={(e) => handleCodeChange(index, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(index, e)}
@@ -174,7 +169,6 @@ const VerifyEmailPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Submit Button */}
             <Button
               type="submit"
               loading={isSubmitting}
@@ -188,7 +182,6 @@ const VerifyEmailPage: React.FC = () => {
               {isSubmitting ? "Verifying..." : "Verify Code"}
             </Button>
 
-            {/* Resend */}
             <div className="text-center">
               <button
                 type="button"

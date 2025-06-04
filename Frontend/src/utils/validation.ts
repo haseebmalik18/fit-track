@@ -1,13 +1,10 @@
-// Email validation regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Validation constants
 const PASSWORD_MIN_LENGTH = 6;
 const PASSWORD_MAX_LENGTH = 40;
 const NAME_MIN_LENGTH = 2;
 const NAME_MAX_LENGTH = 50;
 
-// Individual field validators
 export const validateEmail = (email: string): string | null => {
   if (!email.trim()) {
     return "Email is required";
@@ -59,7 +56,6 @@ export const validateName = (
   return null;
 };
 
-// ADD THIS MISSING FUNCTION:
 export const validateVerificationCode = (code: string): string | null => {
   if (!code.trim()) {
     return "Verification code is required";
@@ -76,7 +72,6 @@ export const validateVerificationCode = (code: string): string | null => {
   return null;
 };
 
-// Form validation functions
 export const validateLoginForm = (email: string, password: string) => {
   const errors: Record<string, string> = {};
 
