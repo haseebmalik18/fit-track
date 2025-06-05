@@ -9,7 +9,8 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage";
-import OnboardingPage from "./pages/OnBoardingPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import Dashboard from "./pages/Dashboard";
 
 const RouteLoading: React.FC = () => (
   <div className="min-h-screen flex items-center justify-center">
@@ -96,62 +97,6 @@ const VerificationRoute: React.FC<{ children: React.ReactNode }> = ({
   return <>{children}</>;
 };
 
-const Dashboard: React.FC = () => {
-  const { user, logout } = useAuth();
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome to FitTrack, {user?.firstName}!
-              </h1>
-              <button
-                onClick={logout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h2 className="text-lg font-semibold text-blue-900 mb-2">
-                🎉 Welcome to FitTrack!
-              </h2>
-              <p className="text-blue-700 mb-4">
-                Your account is fully set up and ready to go. Your fitness
-                dashboard will be built here.
-              </p>
-
-              <div className="bg-white rounded-lg p-4 text-sm">
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  Account Status
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-700">
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    <span>Email Verified</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    <span>Profile Complete</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    <span>Ready to Track</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const AppContent: React.FC = () => {
   return (
     <Router>
@@ -196,6 +141,150 @@ const AppContent: React.FC = () => {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/nutrition"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Nutrition Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the nutrition tracking page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/workouts"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Workouts Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the workout tracking page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/progress"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Progress Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the progress analytics page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/goals"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Goals Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the goals management page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Calendar Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the calendar view page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/achievements"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Achievements Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the achievements page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Profile Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the user profile page.
+                  </p>
+                </div>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                    Settings Page
+                  </h1>
+                  <p className="text-gray-600">
+                    Coming soon! This will be the settings page.
+                  </p>
+                </div>
+              </div>
             </ProtectedRoute>
           }
         />
