@@ -5,9 +5,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-/**
- * Service for sending emails.
- */
+
 @Service
 public class EmailService {
 
@@ -61,7 +59,6 @@ public class EmailService {
             System.out.println("Welcome email sent to: " + toEmail);
         } catch (Exception e) {
             System.err.println("Failed to send welcome email to " + toEmail + ": " + e.getMessage());
-            // Don't throw exception for welcome email failure
         }
     }
 }

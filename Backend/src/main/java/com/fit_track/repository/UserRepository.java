@@ -6,24 +6,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-/**
- * Repository for User entity with email-based authentication.
- */
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Find user by email address.
-     */
+
     Optional<User> findByEmail(String email);
 
-    /**
-     * Find user by verification code.
-     */
+
     Optional<User> findByVerificationCode(String verificationCode);
 
-    /**
-     * Check if email already exists.
-     */
+
     boolean existsByEmail(String email);
 }

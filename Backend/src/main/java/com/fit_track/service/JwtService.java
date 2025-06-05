@@ -15,17 +15,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-/**
- * Service for JWT token operations.
- */
+
 @Service
 public class JwtService {
 
-    // Updated to match your YAML structure: security.jwt.secret-key
+
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    // Updated to match your YAML structure: security.jwt.expiration
+
     @Value("${security.jwt.expiration}")
     private long jwtExpiration;
 

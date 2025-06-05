@@ -19,9 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Random;
 
-/**
- * Service for authentication operations with email verification and onboarding.
- */
+
 @Service
 public class AuthService {
 
@@ -44,33 +42,32 @@ public class AuthService {
     private EmailService emailService;
 
     public RegisterResponse register(RegisterRequest request) {
-        // Check if email already exists
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already registered!");
         }
 
-        // Create new user
+
         User user = new User();
-        user.setEmail(request.getEmail());
+        user.setEmail(request.getEmail().toLowerCase().trim());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
         user.setEmailVerified(false);
         user.setProfileCompleted(false);
-        user.setEnabled(false); // Only enabled after email verification
+        user.setEnabled(false);
 
-        // Generate verification code
+
         String verificationCode = generateVerificationCode();
         user.setVerificationCode(verificationCode);
-        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15)); // 15 minutes expiry
+        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
 
         User savedUser = userRepository.save(user);
 
-        // Send verification email
+
         try {
             emailService.sendVerificationEmail(savedUser.getEmail(), verificationCode);
         } catch (Exception e) {
-            // Log error but don't fail registration
             System.err.println("Failed to send verification email: " + e.getMessage());
         }
 
@@ -79,20 +76,43 @@ public class AuthService {
     }
 
     public AuthResponse verifyEmail(VerifyEmailRequest request) {
-        // Find user by email first
-        User user = userRepository.findByEmail(request.getEmail())
+
+        String email = request.getEmail().toLowerCase().trim();
+        String code = request.getCode().trim();
+
+
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Check if verification code matches
-        if (!request.getCode().equals(user.getVerificationCode())) {
+
+        if (user.isEmailVerified()) {
+            throw new RuntimeException("Email is already verified");
+        }
+
+
+        if (user.getVerificationCode() == null || user.getVerificationCode().trim().isEmpty()) {
+            throw new RuntimeException("No verification code found. Please request a new one.");
+        }
+
+        // Debug logging - remove in production
+        System.out.println("Stored code: '" + user.getVerificationCode() + "'");
+        System.out.println("Provided code: '" + code + "'");
+        System.out.println("Codes match: " + user.getVerificationCode().equals(code));
+        System.out.println("Code expiry: " + user.getVerificationCodeExpiresAt());
+        System.out.println("Current time: " + LocalDateTime.now());
+
+
+        if (user.getVerificationCodeExpiresAt() == null ||
+                LocalDateTime.now().isAfter(user.getVerificationCodeExpiresAt())) {
+            throw new RuntimeException("Verification code has expired. Please request a new one.");
+        }
+
+
+        if (!code.equals(user.getVerificationCode())) {
             throw new RuntimeException("Invalid verification code");
         }
 
-        if (!user.isVerificationCodeValid()) {
-            throw new RuntimeException("Verification code has expired");
-        }
 
-        // Verify email
         user.setEmailVerified(true);
         user.setEnabled(true);
         user.setVerificationCode(null);
@@ -100,7 +120,7 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        // Generate JWT token
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         String jwt = jwtService.generateToken(userDetails);
 
@@ -110,14 +130,14 @@ public class AuthService {
     }
 
     public AuthResponse completeOnboarding(OnboardingRequest request, String userEmail) {
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmail(userEmail.toLowerCase().trim())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!user.isEmailVerified()) {
             throw new RuntimeException("Email must be verified before completing onboarding");
         }
 
-        // Update user profile
+
         user.setGoal(request.getGoal());
         user.setActivityLevel(request.getActivityLevel());
         user.setCurrentWeight(request.getCurrentWeight());
@@ -129,7 +149,7 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        // Generate new JWT token with updated info
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         String jwt = jwtService.generateToken(userDetails);
 
@@ -139,18 +159,21 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        // Authenticate user
+
+        String email = request.getEmail().toLowerCase().trim();
+
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        email,
                         request.getPassword()
                 )
         );
 
-        // Get user details
+
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        // Find user in database
+
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -158,7 +181,7 @@ public class AuthService {
             throw new RuntimeException("Please verify your email before logging in");
         }
 
-        // Generate JWT token
+
         String jwt = jwtService.generateToken(userDetails);
 
         return new AuthResponse(jwt, user.getId(), user.getEmail(),
@@ -167,6 +190,9 @@ public class AuthService {
     }
 
     public void resendVerificationCode(String email) {
+
+        email = email.toLowerCase().trim();
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -174,14 +200,14 @@ public class AuthService {
             throw new RuntimeException("Email is already verified");
         }
 
-        // Generate new verification code
+
         String verificationCode = generateVerificationCode();
         user.setVerificationCode(verificationCode);
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
 
         userRepository.save(user);
 
-        // Send verification email
+
         try {
             emailService.sendVerificationEmail(user.getEmail(), verificationCode);
         } catch (Exception e) {
@@ -191,7 +217,8 @@ public class AuthService {
 
     private String generateVerificationCode() {
         Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // 6-digit code
-        return String.valueOf(code);
+
+        int code = random.nextInt(1000000);
+        return String.format("%06d", code);
     }
 }

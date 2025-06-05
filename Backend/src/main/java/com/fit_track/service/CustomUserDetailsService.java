@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
-/**
- * Custom UserDetailsService for Spring Security using email-based authentication.
- */
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -26,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail()) // Using email as username
+                .username(user.getEmail())
                 .password(user.getPassword())
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority("USER")))
                 .accountExpired(false)

@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-/**
- * REST controller for authentication endpoints with email verification flow.
- */
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -56,7 +54,6 @@ public class AuthController {
     @PostMapping("/onboarding")
     public ResponseEntity<?> completeOnboarding(@Valid @RequestBody OnboardingRequest request) {
         try {
-            // Get current authenticated user's email
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = authentication.getName();
 
@@ -102,7 +99,7 @@ public class AuthController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String userEmail = authentication.getName();
 
-            // You can add a method to get current user info if needed
+
             return ResponseEntity.ok(Map.of("email", userEmail));
         } catch (Exception e) {
             return ResponseEntity.badRequest()

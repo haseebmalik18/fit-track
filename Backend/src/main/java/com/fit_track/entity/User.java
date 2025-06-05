@@ -40,7 +40,7 @@ public class User {
 
     private boolean emailVerified = false;
     private boolean profileCompleted = false;
-    private boolean enabled = false; // Only enabled after email verification
+    private boolean enabled = false;
 
     @Column(name = "verification_code")
     private String verificationCode;
@@ -54,7 +54,7 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Profile/Goals fields (filled during onboarding)
+
     @Enumerated(EnumType.STRING)
     private Goal goal;
 
@@ -69,7 +69,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    // Constructors
+
     public User() {}
 
     public User(String email, String password, String firstName, String lastName) {
@@ -79,7 +79,7 @@ public class User {
         this.lastName = lastName;
     }
 
-    // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -224,7 +224,7 @@ public class User {
         this.gender = gender;
     }
 
-    // Utility methods
+
     public String getFullName() {
         return firstName + " " + lastName;
     }
@@ -234,7 +234,7 @@ public class User {
                 LocalDateTime.now().isBefore(verificationCodeExpiresAt);
     }
 
-    // Enums
+
     public enum Goal {
         LOSE_WEIGHT,
         MAINTAIN_WEIGHT,
